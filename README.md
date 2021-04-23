@@ -1,95 +1,84 @@
-## discord.js docs
+## Discord.js Docs
 
 A parser and wrapper for the [discord.js](https://github.com/discordjs/discord.js) docs.
 
-## Usage
+## Install
 
-### Doc
-
-```ts
-import * as docs from "discord.js-docs"
+```shell
+npm i ghom-djs-docs
 ```
 
-### Doc.fetch(sourceName[, options])
+## Import
+
+```ts
+// ESModule / TypeScript
+import * as docs from "ghom-djs-docs"
+
+// Or CommonJS
+const docs = require("ghom-djs-docs")
+```
+
+### docs.fetchRaw(sourceName[, options])
 
 Fetches and parses the docs for the given project.\
-`sourceName` can be any of the predefined values (`stable`, `master`, `commando`, `rpc`, `akairo`, `akairo-master` and `collection`)
+`sourceName` can be any of the predefined values (`stable`, `master`, `commando`, `rpc`, `akairo`, and `collection`)
 or an URL which will return the raw generated docs (e.g https://raw.githubusercontent.com/discordjs/discord.js/docs/master.json ).\
 Once a documentation is fetched it will be cached. Use `options.force` to avoid this behavior.
 
 **Params**:
 
-|    name    |  type  | required |
-| :--------: | :----: | :------: |
-| sourceName | string |   yes    |
-|  options   | object |    no    |
+|    name    |    type    | required |
+| :--------: | :--------: | :------: |
+| sourceName | SourceName |   yes    |
+|  options   |   object   |    no    |
 
-**Returns**: `Promise<Doc?>`
+**Returns**: `Promise<Raw | null>`
 
-```js
-const doc = await Doc.fetch("master")
-const doc = await Doc.fetch("akairo-master", { force: true })
-const doc = await Doc.fetch(
-  "https://raw.githubusercontent.com/discordjs/discord-rpc/docs/master.json",
-  { force: true }
-)
+```ts
+const master = await docs.fetchRaw("master")
+const akairo = await docs.fetchRaw("akairo", { force: true })
 ```
 
-### Doc#get(parent[, child1[ ...[, childN]]])
+### docs.search(raw, path)
 
-Gets documention for one element. Multiple properties/methods can be chained.
+Gets documentation for one element. Multiple properties/methods can be chained by `.` in the "path" param.
 **Params**:
 
-|    name     |  type  | required |
-| :---------: | :----: | :------: |
-|   parent    | string |   yes    |
-| ...children | string |    no    |
+| name |  type  | required |
+| :--: | :----: | :------: |
+| raw  |  Raw   |   yes    |
+| path | string |   yes    |
 
-**Returns**: `DocElement?`
+**Returns**: `SearchResult`
 
-```js
-doc.get("message")
-doc.get("message", "guild")
-doc.get("message", "guild", "members")
+```ts
+const someCLass = docs.search(master, "message")
+const someMethod = docs.search(master, "message.guild.iconURL")
+const someProp = docs.search(master, "message.guild.name")
+const someParam = docs.search(master, "message.guild.members.fetch.options")
 ```
 
-### Doc#search(query)
+### docs.fetchAll(options)
 
-Searches the documentation using fuzzy search for the given query and returns top 10 hits.
-
-**Params**:
-
-| name  |  type  | required |
-| :---: | :----: | :------: |
-| query | string |   yes    |
-
-**Returns**: `Array<DocElement>?`
-
-### Doc#resolveEmbed(query)
-
-Tries to resolve the query into a `DocElement` using `Doc#get`. The search terms are expected to be separated by `#` or `.`, example: `message#pin`. If an element cannot be resolved, falls back to `Doc#search`. The result is then formatted into an object representing a Discord embed which can be sent directly to a Discord channel.
+Fetch all the documentations and stock it in the `docs.cache` Map object. (returns this one)
 
 **Params**:
 
-| name  |  type  | required |
-| :---: | :----: | :------: |
-| query | string |   yes    |
+|  name   |  type  | required |
+| :-----: | :----: | :------: |
+| options | object |    no    |
 
-**Returns**: `object?`
+**Returns**: `Promise<Map<SourceName, Raw>>`
 
-### DocElement
+### docs.isXXXX(raw, result)
 
-#### Properties:
+Checks and types result
 
-- `doc` - the Doc this element originates from;
-- `docType` - the type of this documentation element. One of `class`, `event`, `interface`, `method`, `param`, `prop` and `typedef`;
-- `parent` - parent element if present;
-- `name` - self-explanatory;
-- `description` - self-explanatory;
-- `meta` - any meta information if present;
-- `returns` - the type this element returns, if applicable;
-- `examples` - code examples, if any;
-- `type` - the JS type of this element, if applicable;
-- `nullable` - tells whether this element can be null;
-- `deprecated` - tells whether this element has been deprecated;
-- `access` - access level for this element. Defaults to `public`;
+**Params**:
+
+|  name  |     type     | required |
+| :----: | :----------: | :------: |
+|  raw   |     Raw      |   yes    |
+| result | SearchResult |   yes    |
+
+**Returns**: `result is XXXX`

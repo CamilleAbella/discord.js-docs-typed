@@ -138,10 +138,8 @@ export async function fetchRaw(
 ): Promise<Raw> {
   if (!force && cache.has(sourceName)) return cache.get(sourceName) as Raw
 
-  const url = sources[sourceName] ?? sourceName
-
   try {
-    const data: Raw = await fetch(url).then((res) => res.json())
+    const data: Raw = await fetch(sources[sourceName]).then((res) => res.json())
     cache.set(sourceName, data)
     return data
   } catch (err) {
