@@ -1,7 +1,7 @@
-const DocElement = require('./DocElement')
+const DocElement = require("./DocElement")
 
 class DocTypedef extends DocElement {
-  constructor (doc, data) {
+  constructor(doc, data) {
     super(doc, DocElement.types.TYPEDEF, data)
     this.type = data.type.flat(5)
   }
