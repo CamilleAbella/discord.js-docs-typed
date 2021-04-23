@@ -1,10 +1,15 @@
-const DocElement = require("./DocElement")
-const DocProp = require("./DocProp")
-const DocMethod = require("./DocMethod")
-const DocEvent = require("./DocEvent")
+import DocElement from "./DocElement"
+import DocProp from "./DocProp"
+import DocMethod from "./DocMethod"
+import DocEvent from "./DocEvent"
+import * as t from "./TypedContent"
 
 class DocClass extends DocElement {
-  constructor(doc, data) {
+  public extends: string | null
+  public implements: string | null
+  public construct: string
+
+  constructor(doc, data: t.Docs) {
     super(doc, DocElement.types.CLASS, data)
     this.extends = data.extends || null
     this.implements = data.implements || null

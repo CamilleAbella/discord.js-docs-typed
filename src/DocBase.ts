@@ -26,16 +26,16 @@ export default class DocBase {
     return filtered.length ? filtered : null
   }
 
-  findChild(query, exclude = []) {
+  findChild(query: string, exclude: DocElement[] = []) {
     query = query.toLowerCase()
 
-    let docType = null
+    let docType: t.Types | null = null
     if (query.endsWith("()")) {
       query = query.slice(0, -2)
-      docType = types.METHOD
+      docType = t.Types.METHOD
     } else if (query.startsWith("e-")) {
       query = query.slice(2)
-      docType = types.EVENT
+      docType = t.Types.EVENT
     }
 
     return Array.from(this.children.values()).find(
@@ -47,35 +47,35 @@ export default class DocBase {
   }
 
   get classes() {
-    return this.childrenOfType(types.CLASS)
+    return this.childrenOfType(t.Types.CLASS)
   }
 
   get typedefs() {
-    return this.childrenOfType(types.TYPEDEF)
+    return this.childrenOfType(t.Types.TYPEDEF)
   }
 
   get interfaces() {
-    return this.childrenOfType(types.INTERFACE)
+    return this.childrenOfType(t.Types.INTERFACE)
   }
 
   get props() {
-    return this.childrenOfType(types.PROP)
+    return this.childrenOfType(t.Types.PROP)
   }
 
   get methods() {
-    return this.childrenOfType(types.METHOD)
+    return this.childrenOfType(t.Types.METHOD)
   }
 
   get events() {
-    return this.childrenOfType(types.EVENT)
+    return this.childrenOfType(t.Types.EVENT)
   }
 
   get params() {
-    return this.childrenOfType(types.PARAM)
+    return this.childrenOfType(t.Types.PARAM)
   }
 
   static get types() {
-    return types
+    return t.Types
   }
 }
 

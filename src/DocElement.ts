@@ -1,10 +1,12 @@
+import * as t from "./TypedContent"
+
 const DocBase = require("./DocBase")
 const { stripIndents } = require("common-tags")
 
 const DESCRIPTION_LIMIT = 1500
 
 export default class DocElement extends DocBase {
-  constructor(doc, docType, data, parent) {
+  constructor(doc, docType, data: t.Docs, parent) {
     super(data)
     this.doc = doc
     this.docType = docType

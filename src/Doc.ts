@@ -86,18 +86,18 @@ export default class Doc extends DocBase {
     const exclude = Array.isArray(terms[0]) ? terms.shift() : []
     terms = terms.filter((term) => term).map((term) => term.toLowerCase())
 
-    let elem = this.findChild(terms.shift())
+    let elem = this.findChild(terms.shift() as string)
     if (!elem || !terms.length) return elem || null
 
     while (terms.length) {
       const term = terms.shift()
-      const child = elem.findChild(term, exclude)
+      const child: DocElement | undefined = elem?.findChild(term, exclude)
 
       if (!child) return null
       elem = terms.length && child.typeElement ? child.typeElement : child
     }
 
-    return elem
+    return elem ?? null
   }
 
   search(
@@ -107,11 +107,11 @@ export default class Doc extends DocBase {
     const result = this.fuse.search(query)
     if (!result.length) return null
 
-    const filtered = []
+    const filtered: string[] = []
 
     while (result.length > 0 && filtered.length < 10) {
       const element = this.get(filtered, ...result.shift().split("#"))
-      if (excludePrivateElements && element.access === "private") continue
+      if (excludePrivateElements && element?.access === "private") continue
       filtered.push(element)
     }
 

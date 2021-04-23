@@ -1,6 +1,9 @@
 import DocClass from "./DocClass"
 import DocTypedef from "./DocTypedef"
 import DocInterface from "./DocInterface"
+import DocProp from "./DocProp"
+import DocMethod from "./DocMethod"
+import DocEvent from "./DocEvent"
 
 export const sources = {
   stable:
@@ -40,6 +43,12 @@ export enum Types {
 }
 
 export interface Docs {
+  construct: string
+  extends?: string
+  implements?: string
+  props?: DocProp[]
+  methods?: DocMethod[]
+  events?: DocEvent[]
   classes?: DocClass[]
   typedefs?: DocTypedef[]
   interfaces?: DocInterface[]

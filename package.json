@@ -11,7 +11,9 @@
     "semi": false
   },
   "scripts": {
-    "format": "prettier --write src README.md"
+    "bundle": "gulp bundle",
+    "watch": "gulp watch",
+    "format": "prettier --write src README.md gulpfile.js"
   },
   "dependencies": {
     "common-tags": "^1.8.0",
@@ -24,6 +26,10 @@
     "esbuild": "^0.11.13",
     "gulp": "^4.0.2",
     "prettier": "^2.2.1",
-    "typescript": "^4.2.4"
+    "typescript": "^4.2.4",
+    "dotenv": "^8.2.0",
+    "gulp-cli": "^2.3.0",
+    "gulp-esbuild": "^0.3.14",
+    "gulp-typescript": "^6.0.0-alpha.1"
   }
 }
