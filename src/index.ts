@@ -1,1 +1,1 @@
-export * from "./Doc"
+export * from "./docs"
