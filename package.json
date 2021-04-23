@@ -1,11 +1,11 @@
 {
   "name": "ghom-djs-docs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A discord.js docs parser and wrapper.",
   "main": "dist/index.js",
   "types": "dist",
-  "repository": "git@github.com:TeeSeal/discord.js-docs.git",
-  "author": "TeeSeal <teesealz@gmail.com>",
+  "repository": "git@github.com:CamilleAbella/discord.js-docs-typed.git",
+  "author": "ghom",
   "license": "MIT",
   "prettier": {
     "semi": false
@@ -16,14 +16,12 @@
     "format": "prettier --write src README.md gulpfile.js"
   },
   "dependencies": {
-    "common-tags": "^1.8.0",
     "fuse.js": "^3.4.6",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/node": "^14.14.41",
     "@types/node-fetch": "^2.5.10",
-    "dotenv": "^8.2.0",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
     "gulp-typescript": "^6.0.0-alpha.1",
