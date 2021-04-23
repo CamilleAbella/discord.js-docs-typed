@@ -1,4 +1,5 @@
 import fetch from "node-fetch"
+import Fuse from "fuse.js"
 
 export const sources = {
   stable:
@@ -9,8 +10,6 @@ export const sources = {
     "https://raw.githubusercontent.com/discordjs/commando/docs/master.json",
   rpc: "https://raw.githubusercontent.com/discordjs/rpc/docs/master.json",
   akairo:
-    "https://raw.githubusercontent.com/discord-akairo/discord-akairo/docs/stable.json",
-  "akairo-master":
     "https://raw.githubusercontent.com/discord-akairo/discord-akairo/docs/master.json",
   collection:
     "https://raw.githubusercontent.com/discordjs/collection/docs/master.json",
@@ -37,21 +36,113 @@ export enum Type {
   TYPEDEF = "typedef",
 }
 
-export const cache = new Map<string, Raw>()
+export const cache = new Map<SourceName, Raw>()
 
-export async function search(raw: Raw) {}
+export const isClass = (raw: Raw, e: SearchResult): e is Class =>
+  !!(e && raw.classes?.includes(e as any))
+export const isTypedef = (raw: Raw, e: SearchResult): e is Typedef =>
+  !!(e && raw.typedefs?.includes(e as any))
+export const isExternal = (raw: Raw, e: SearchResult): e is External =>
+  !!(e && raw.externals?.includes(e as any))
+export const isInterface = (raw: Raw, e: SearchResult): e is Interface =>
+  !!(e && raw.interfaces?.includes(e as any))
+
+export const isProp = (raw: Raw, e: SearchResult): e is Prop =>
+  !!(
+    e &&
+    (raw.classes?.some((c) => c.props?.includes(e as any)) ||
+      raw.typedefs?.some((t) => t.props?.includes(e as any)) ||
+      raw.interfaces?.some((i) => i.props?.includes(e as any)))
+  )
+
+export const isEvent = (raw: Raw, e: SearchResult): e is Event =>
+  !!(
+    e &&
+    (raw.classes?.some((c) => c.events?.includes(e as any)) ||
+      raw.interfaces?.some((i) => i.events?.includes(e as any)))
+  )
+
+export const isMethod = (raw: Raw, e: SearchResult): e is Method =>
+  !!(
+    e &&
+    (raw.classes?.some((c) => c.methods?.includes(e as any)) ||
+      raw.interfaces?.some((i) => i.methods?.includes(e as any)))
+  )
+
+export const isParam = (raw: Raw, e: SearchResult): e is Param =>
+  !!(
+    e &&
+    (raw.classes?.some((c) =>
+      c.methods?.some((m) => m.params?.includes(e as any))
+    ) ||
+      raw.interfaces?.some((i) =>
+        i.methods?.some((m) => m.params?.includes(e as any))
+      ))
+  )
+
+export function search(raw: Raw, path: string): SearchResult {
+  const segments = path.split(/\s+|\.|#|\/|\\/)
+
+  let current: SearchResult = null
+
+  for (const segment of segments) {
+    let items: SearchResult[]
+
+    if (!current) {
+      items = [
+        ...(raw.interfaces ?? []),
+        ...(raw.classes ?? []),
+        ...(raw.typedefs ?? []),
+        ...(raw.externals ?? []),
+      ]
+    } else {
+      if (isClass(raw, current) || isInterface(raw, current)) {
+        items = [
+          ...(current.events ?? []),
+          ...(current.methods ?? []),
+          ...(current.props ?? []),
+        ]
+      } else if (isTypedef(raw, current)) {
+        items = [...(current.param ?? []), ...(current.props ?? [])]
+      } else if (isMethod(raw, current) || isEvent(raw, current)) {
+        items = current.params ?? []
+      } else {
+        return current
+      }
+    }
+
+    const engine = new Fuse(items, {
+      minMatchCharLength: 3,
+      keys: ["name"],
+    })
+
+    current = engine.search(segment, { limit: 1 })[0] ?? null
+
+    if (!current) return null
+  }
+
+  return current
+}
+
+export async function fetchAll({ force }: { force?: boolean } = {}) {
+  for (const sourceName in sources) {
+    await fetchRaw(sourceName as SourceName, { force })
+  }
+
+  return cache
+}
 
 export async function fetchRaw(
-  sourceName: keyof typeof sources,
+  sourceName: SourceName,
   { force }: { force?: boolean } = {}
 ): Promise<Raw> {
-  const url = sources[sourceName] ?? sourceName
+  if (!force && cache.has(sourceName)) return cache.get(sourceName) as Raw
 
-  if (!force && cache.has(url)) return cache.get(url) as Raw
+  const url = sources[sourceName] ?? sourceName
 
   try {
     const data: Raw = await fetch(url).then((res) => res.json())
-    cache.set(url, data)
+    cache.set(sourceName, data)
     return data
   } catch (err) {
     throw new Error("invalid source name or URL.")
@@ -62,6 +153,8 @@ export function flatType(type: TypeName): string {
   return type.flat(2).join("")
 }
 
+export type SourceName = keyof typeof sources
+
 export type TypeName = (string | (string | string[])[])[]
 export type TypeDescription =
   | TypeName
@@ -69,6 +162,17 @@ export type TypeDescription =
       types: TypeName
       description?: string
     }
+
+export type SearchResult =
+  | Prop
+  | Method
+  | Event
+  | Param
+  | Interface
+  | Class
+  | Typedef
+  | External
+  | null
 
 export type Access = "private" | "protected"
 
@@ -91,10 +195,10 @@ export interface Raw {
       }
     }
   }
-  classes: Class[]
-  interfaces: Interface[]
-  typedefs: Typedef[]
-  externals: External[]
+  classes?: Class[]
+  interfaces?: Interface[]
+  typedefs?: Typedef[]
+  externals?: External[]
 }
 
 export interface Meta {
