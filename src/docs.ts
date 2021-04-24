@@ -1,5 +1,4 @@
 import fetch from "node-fetch"
-import Fuse from "fuse.js"
 
 export const sources = {
   stable:
@@ -13,27 +12,6 @@ export const sources = {
     "https://raw.githubusercontent.com/discord-akairo/discord-akairo/docs/master.json",
   collection:
     "https://raw.githubusercontent.com/discordjs/collection/docs/master.json",
-}
-
-export interface Embed {
-  title?: string | null
-  description?: string | null
-  color?: number | null
-  author?: {
-    name: string
-    icon_url?: string | null
-    url?: string | null
-  }
-}
-
-export enum Type {
-  CLASS = "class",
-  EVENT = "event",
-  INTERFACE = "interface",
-  METHOD = "method",
-  PARAM = "param",
-  PROP = "prop",
-  TYPEDEF = "typedef",
 }
 
 export const cache = new Map<SourceName, Raw>()
@@ -81,14 +59,16 @@ export const isParam = (raw: Raw, e: SearchResult): e is Param =>
   )
 
 export function search(raw: Raw, path: string): SearchResult {
-  const segments = path.split(/\s+|\.|#|\/|\\/)
+  const segments = path.toLowerCase().split(/\s+|\.|#|\/|\\/)
 
-  let current: SearchResult = null
+  let item: SearchResult = null
 
-  for (const segment of segments) {
+  for (let index = 0; index < segments.length; index++) {
+    const segment = segments[index]
+
     let items: SearchResult[]
 
-    if (!current) {
+    if (!item) {
       items = [
         ...(raw.interfaces ?? []),
         ...(raw.classes ?? []),
@@ -96,32 +76,42 @@ export function search(raw: Raw, path: string): SearchResult {
         ...(raw.externals ?? []),
       ]
     } else {
-      if (isClass(raw, current) || isInterface(raw, current)) {
+      if (isClass(raw, item) || isInterface(raw, item)) {
         items = [
-          ...(current.events ?? []),
-          ...(current.methods ?? []),
-          ...(current.props ?? []),
+          ...(item.events ?? []),
+          ...(item.methods ?? []),
+          ...(item.props ?? []),
         ]
-      } else if (isTypedef(raw, current)) {
-        items = [...(current.param ?? []), ...(current.props ?? [])]
-      } else if (isMethod(raw, current) || isEvent(raw, current)) {
-        items = current.params ?? []
+      } else if (isTypedef(raw, item)) {
+        items = [...(item.param ?? []), ...(item.props ?? [])]
+      } else if (isMethod(raw, item) || isEvent(raw, item)) {
+        items = item.params ?? []
+      } else if (isProp(raw, item)) {
+        if (index === segments.length) return item
+        else
+          return search(
+            raw,
+            [flatTypeDescription(item.type), ...segments.slice(index)].join(".")
+          )
       } else {
-        return current
+        return item
       }
     }
 
-    const engine = new Fuse(items, {
-      minMatchCharLength: 3,
-      keys: ["name"],
-    })
+    item =
+      items.find((item) => {
+        return item?.name.toLowerCase() === segment
+      }) ?? null
 
-    current = engine.search(segment, { limit: 1 })[0] ?? null
-
-    if (!current) return null
+    if (!item) return null
   }
 
-  return current
+  return item
+}
+
+function flatTypeDescription(t: TypeDescription): string {
+  if (Array.isArray(t)) return t.flat(2).join("")
+  else return t.types.flat(2).join("")
 }
 
 export async function fetchAll({ force }: { force?: boolean } = {}) {

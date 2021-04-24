@@ -1,6 +1,6 @@
 {
   "name": "ghom-djs-docs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A discord.js docs parser and wrapper.",
   "main": "dist/index.js",
   "types": "dist",
@@ -16,7 +16,6 @@
     "format": "prettier --write src README.md gulpfile.js"
   },
   "dependencies": {
-    "fuse.js": "^3.4.6",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
