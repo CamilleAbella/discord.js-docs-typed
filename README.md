@@ -27,14 +27,14 @@ Fetches and parses the docs for the given project.\
 or an URL which will return the raw generated docs (e.g https://raw.githubusercontent.com/discordjs/discord.js/docs/master.json ).\
 Once a documentation is fetched it will be cached. Use `options.force` to avoid this behavior.
 
-**Params**:
+### Params:
 
 |    name    |    type    | required |
 | :--------: | :--------: | :------: |
 | sourceName | SourceName |   yes    |
 |  options   |   object   |    no    |
 
-**Returns**: `Promise<Raw | null>`
+### Returns: `Promise<Raw | null>`
 
 ```ts
 const master = await docs.fetchRaw("master")
@@ -44,14 +44,15 @@ const akairo = await docs.fetchRaw("akairo", { force: true })
 ## docs.search(raw, path)
 
 Gets documentation for one element. Multiple properties/methods can be chained by `.` in the "path" param.
-**Params**:
+
+### Params:
 
 | name |         type          | required |
 | :--: | :-------------------: | :------: |
 | raw  | Raw &vert; SourceName |   yes    |
 | path |        string         |   yes    |
 
-**Returns**: `Promise<SearchResult>`
+### Returns: `Promise<SearchResult>`
 
 ```ts
 // from raw
@@ -70,13 +71,13 @@ const someParam = await docs.search(
 
 Fetch all the documentations and stock it in the `docs.cache` Map object. (returns this one)
 
-**Params**:
+### Params:
 
 |  name   |  type  | required |
 | :-----: | :----: | :------: |
 | options | object |    no    |
 
-**Returns**: `Promise<Map<SourceName, Raw>>`
+### Returns: `Promise<Map<SourceName, Raw>>`
 
 ```ts
 const cache = await docs.fetchAll()
@@ -89,13 +90,13 @@ cache.forEach((raw, sourceName) => {
 
 Get the flat version of a 3D array type description
 
-**Params**:
+### Params:
 
 | name |      type       | required |
 | :--: | :-------------: | :------: |
 | type | TypeDescription |    no    |
 
-**Returns**: `string | null`
+### Returns: `string | null`
 
 ```ts
 const stable = await docs.fetchRaw("stable")
@@ -109,14 +110,14 @@ if (docs.isProp(stable, someProp))
 
 Get the doc source URL in the Github repository
 
-**Params**:
+### Params:
 
 |    name    |     type     | required |
 | :--------: | :----------: | :------: |
 | sourceName |  SourceName  |   yes    |
 |   result   | SearchResult |   yes    |
 
-**Returns**: `string | null`
+### Returns: `string | null`
 
 ```ts
 const someProp = await docs.search("stable", "guild.owner.user.id")
@@ -128,11 +129,11 @@ console.log(docs.buildURL("stable", someProp))
 
 Type assertion method
 
-**Params**:
+### Params:
 
 |  name  |     type     | required |
 | :----: | :----------: | :------: |
 |  raw   |     Raw      |   yes    |
 | result | SearchResult |   yes    |
 
-**Returns**: `result is XXXX` (`boolean`)
+### Returns: `result is XXXX` (`boolean`)
