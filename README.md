@@ -1,4 +1,4 @@
-## Discord.js Docs
+# Discord.js Docs
 
 A parser and wrapper for the [discord.js](https://github.com/discordjs/discord.js) docs.
 
@@ -18,7 +18,9 @@ import * as docs from "ghom-djs-docs"
 const docs = require("ghom-djs-docs")
 ```
 
-### docs.fetchRaw(sourceName[, options])
+<hr>
+
+## docs.fetchRaw(sourceName[, options])
 
 Fetches and parses the docs for the given project.\
 `sourceName` can be any of the predefined values (`stable`, `master`, `commando`, `rpc`, `akairo`, and `collection`)
@@ -39,26 +41,32 @@ const master = await docs.fetchRaw("master")
 const akairo = await docs.fetchRaw("akairo", { force: true })
 ```
 
-### docs.search(raw, path)
+## docs.search(raw, path)
 
 Gets documentation for one element. Multiple properties/methods can be chained by `.` in the "path" param.
 **Params**:
 
-| name |  type  | required |
-| :--: | :----: | :------: |
-| raw  |  Raw   |   yes    |
-| path | string |   yes    |
+| name |  type  |  required  |
+| :--: | :----: | :--------: | --- |
+| raw  |  Raw   | SourceName | yes |
+| path | string |    yes     |
 
-**Returns**: `SearchResult`
+**Returns**: `Promise<SearchResult>`
 
 ```ts
-const someCLass = docs.search(master, "message")
-const someMethod = docs.search(master, "message.guild.iconURL")
-const someProp = docs.search(master, "message.guild.name")
-const someParam = docs.search(master, "message.guild.members.fetch.options")
+// from raw
+const someCLass = await docs.search(stable, "message")
+const someMethod = await docs.search(stable, "message.guild.iconURL")
+
+// from sourceName
+const someProp = await docs.search("stable", "message.guild.name")
+const someParam = await docs.search(
+  "stable",
+  "message.guild.members.fetch.options"
+)
 ```
 
-### docs.fetchAll(options)
+## docs.fetchAll(options)
 
 Fetch all the documentations and stock it in the `docs.cache` Map object. (returns this one)
 
@@ -70,9 +78,55 @@ Fetch all the documentations and stock it in the `docs.cache` Map object. (retur
 
 **Returns**: `Promise<Map<SourceName, Raw>>`
 
-### docs.isXXXX(raw, result)
+```ts
+const cache = await docs.fetchAll()
+cache.forEach((raw, sourceName) => {
+  console.log(sourceName, raw.meta)
+})
+```
 
-Checks and types result
+## docs.flatTypeDescription(type)
+
+Get the flat version of a 3D array type description
+
+**Params**:
+
+| name |      type       | required |
+| :--: | :-------------: | :------: |
+| type | TypeDescription |    no    |
+
+**Returns**: `string | null`
+
+```ts
+const stable = await docs.fetchRaw("stable")
+const someProp = await docs.search(stable, "client.ws")
+
+if (docs.isProp(stable, someProp))
+  console.log(docs.flatTypeDescription(someProp.type))
+```
+
+## docs.buildURL(sourceName, result)
+
+Get the doc source URL in the Github repository
+
+**Params**:
+
+|    name    |     type     | required |
+| :--------: | :----------: | :------: |
+| sourceName |  SourceName  |   yes    |
+|   result   | SearchResult |   yes    |
+
+**Returns**: `string | null`
+
+```ts
+const someProp = await docs.search("stable", "guild.owner.user.id")
+
+console.log(docs.buildURL("stable", someProp))
+```
+
+## docs.isXXXX(raw, result)
+
+Type assertion method
 
 **Params**:
 
@@ -81,4 +135,4 @@ Checks and types result
 |  raw   |     Raw      |   yes    |
 | result | SearchResult |   yes    |
 
-**Returns**: `result is XXXX`
+**Returns**: `result is XXXX` (`boolean`)

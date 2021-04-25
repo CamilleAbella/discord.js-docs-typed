@@ -58,7 +58,12 @@ export const isParam = (raw: Raw, e: SearchResult): e is Param =>
       ))
   )
 
-export function search(raw: Raw, path: string): SearchResult {
+export async function search(
+  raw: Raw | SourceName,
+  path: string
+): Promise<SearchResult> {
+  if (typeof raw === "string") raw = await fetchRaw(raw)
+
   const segments = path.toLowerCase().split(/\s+|\.|#|\/|\\/)
 
   let item: SearchResult = null
@@ -109,9 +114,28 @@ export function search(raw: Raw, path: string): SearchResult {
   return item
 }
 
-function flatTypeDescription(t: TypeDescription): string {
+export function flatTypeDescription(t: undefined | null): null
+export function flatTypeDescription(t: TypeDescription): string
+export function flatTypeDescription(
+  t: TypeDescription | undefined | null
+): string | null {
+  if (!t) return null
   if (Array.isArray(t)) return t.flat(2).join("")
   else return t.types.flat(2).join("")
+}
+
+export function buildURL(
+  sourceName: SourceName,
+  e: SearchResult
+): string | null {
+  if (e && "meta" in e && e.meta)
+    return (
+      sources[sourceName]
+        .replace("https://raw.githubusercontent.com/", "https://github.com/")
+        .replace(/docs\/(.+)\.json$/, "blob/$1/") +
+      `${e.meta.path}/${e.meta.file}#L${e.meta.line}`
+    )
+  return null
 }
 
 export async function fetchAll({ force }: { force?: boolean } = {}) {
