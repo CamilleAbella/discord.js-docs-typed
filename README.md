@@ -46,10 +46,10 @@ const akairo = await docs.fetchRaw("akairo", { force: true })
 Gets documentation for one element. Multiple properties/methods can be chained by `.` in the "path" param.
 **Params**:
 
-| name |  type  |  required  |
-| :--: | :----: | :--------: | --- |
-| raw  |  Raw   | SourceName | yes |
-| path | string |    yes     |
+| name |         type          | required |
+| :--: | :-------------------: | :------: |
+| raw  | Raw &vert; SourceName |   yes    |
+| path |        string         |   yes    |
 
 **Returns**: `Promise<SearchResult>`
 
