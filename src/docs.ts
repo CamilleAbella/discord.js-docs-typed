@@ -60,7 +60,8 @@ export const isParam = (raw: Raw, e: SearchResult): e is Param =>
 
 export async function search(
   raw: Raw | SourceName,
-  path: string
+  path: string,
+  parent: SearchResult = null
 ): Promise<SearchResult> {
   if (typeof raw === "string") raw = await fetchRaw(raw)
 
@@ -96,7 +97,10 @@ export async function search(
         else
           return search(
             raw,
-            [flatTypeDescription(item.type), ...segments.slice(index)].join(".")
+            [flatTypeDescription(item.type), ...segments.slice(index)].join(
+              "."
+            ),
+            parent
           )
       } else {
         return item
@@ -109,6 +113,7 @@ export async function search(
       }) ?? null
 
     if (!item) return null
+    else item.parent = parent
   }
 
   return item
@@ -122,6 +127,10 @@ export function flatTypeDescription(
   if (!t) return null
   if (Array.isArray(t)) return t.flat(2).join("")
   else return t.types.flat(2).join("")
+}
+
+export function flatTypeName(type: TypeName): string {
+  return type.flat(2).join("")
 }
 
 export function buildURL(
@@ -159,10 +168,6 @@ export async function fetchRaw(
   } catch (err) {
     throw new Error("invalid source name or URL.")
   }
-}
-
-export function flatType(type: TypeName): string {
-  return type.flat(2).join("")
 }
 
 export type SourceName = keyof typeof sources
@@ -220,6 +225,7 @@ export interface Meta {
 }
 
 export interface Class {
+  parent: SearchResult
   name: string
   description?: string
   see?: string[]
@@ -244,6 +250,7 @@ export interface Construct {
 }
 
 export interface Interface {
+  parent: SearchResult
   name: string
   description?: string
   see?: string[]
@@ -260,6 +267,7 @@ export interface Interface {
 }
 
 export interface Typedef {
+  parent: SearchResult
   name: string
   description?: string
   see?: string[]
@@ -274,6 +282,7 @@ export interface Typedef {
 }
 
 export interface External {
+  parent: SearchResult
   name: string
   description?: string
   see?: string[]
@@ -281,6 +290,7 @@ export interface External {
 }
 
 export interface Prop {
+  parent: SearchResult
   name: string
   description?: string
   meta: Meta
@@ -293,6 +303,7 @@ export interface Prop {
 }
 
 export interface Method {
+  parent: SearchResult
   name: string
   description?: string
   see?: string[]
@@ -314,6 +325,7 @@ export interface Method {
 }
 
 export interface Event {
+  parent: SearchResult
   name: string
   description?: string
   see?: string[]
@@ -323,6 +335,7 @@ export interface Event {
 }
 
 export interface Param {
+  parent: SearchResult
   name: string
   description?: string
   optional?: true
