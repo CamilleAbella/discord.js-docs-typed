@@ -55,7 +55,7 @@ export async function search(
         items = [...(item.param ?? []), ...(item.props ?? [])]
       } else if (check.isMethod(raw, item) || check.isEvent(raw, item)) {
         items = item.params ?? []
-      } else if (check.isProp(raw, item)) {
+      } else if (check.isProp(raw, item) || check.isParam(raw, item)) {
         if (index === segments.length) return item
         else
           return search(
