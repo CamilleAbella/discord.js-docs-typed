@@ -40,12 +40,14 @@ export function flatTypeDescription(
   t: typing.TypeDescription | undefined | null
 ): string | null {
   if (!t) return null
-  if (Array.isArray(t)) return t.flat(2).join("")
-  else return t.types.flat(2).join("")
+  if (Array.isArray(t)) return flatTypeName(t)
+  else return flatTypeName(t.types)
 }
 
 export function flatTypeName(type: typing.TypeName): string {
-  return type.flat(2).join("")
+  return type
+    .map((t) => (typeof t === "string" ? t : t.flat(2).join("")))
+    .join(" | ")
 }
 
 export function buildURL(
