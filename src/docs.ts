@@ -82,6 +82,7 @@ export async function search(
         ...(raw.externals ?? []),
       ]
     } else {
+      parent = item
       if (isClass(raw, item) || isInterface(raw, item)) {
         items = [
           ...(item.events ?? []),
@@ -103,6 +104,7 @@ export async function search(
             parent
           )
       } else {
+        item.parent = parent
         return item
       }
     }

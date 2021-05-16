@@ -1,6 +1,6 @@
 {
   "name": "ghom-djs-docs",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A discord.js docs parser and wrapper.",
   "main": "dist/index.js",
   "types": "dist",
