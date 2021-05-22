@@ -48,6 +48,7 @@ export function flatTypeName(type: typing.TypeName): string {
   return type
     .map((t) => (typeof t === "string" ? t : t.flat(2).join("")))
     .join(" | ")
+    .replace(/\*/g, "any")
 }
 
 export function buildURL(
