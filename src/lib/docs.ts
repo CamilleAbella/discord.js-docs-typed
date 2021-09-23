@@ -7,8 +7,7 @@ import * as util from "./util"
 export const sources = {
   stable:
     "https://raw.githubusercontent.com/discordjs/discord.js/docs/stable.json",
-  master:
-    "https://raw.githubusercontent.com/discordjs/discord.js/docs/master.json",
+  main: "https://raw.githubusercontent.com/discordjs/discord.js/docs/main.json",
   commando:
     "https://raw.githubusercontent.com/discordjs/commando/docs/master.json",
   rpc: "https://raw.githubusercontent.com/discordjs/rpc/docs/master.json",
@@ -106,6 +105,6 @@ export async function fetchRaw(
     cache.set(sourceName, data)
     return data
   } catch (err) {
-    throw new Error("invalid source name or URL.")
+    throw new Error(`Invalid source name or URL "${sourceName}".`)
   }
 }
