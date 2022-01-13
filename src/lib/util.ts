@@ -50,6 +50,7 @@ export function flatTypeName(type: typing.TypeName): string {
     .join(" | ")
     .replace(/\*/g, "any")
     .replace(/\bfunction\b/g, "Function")
+    .replace(/\?([a-z]+)/gi, "$1 | undefined")
 }
 
 export function buildURL(
