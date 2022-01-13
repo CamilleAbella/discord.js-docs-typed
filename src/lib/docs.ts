@@ -1,20 +1,26 @@
-import fetch from "node-fetch"
+import axios from "axios"
 
 import * as typing from "./typing"
 import * as check from "./check"
 import * as util from "./util"
 
+// todo: fetch github doc version files with https://stackoverflow.com/questions/25022016/get-all-file-names-from-a-github-repo-through-the-github-api
+// https://api.github.com/repos/[USER]/[REPO]/git/trees/[BRANCH]?recursive=1
+
 export const sources = {
-  stable:
-    "https://raw.githubusercontent.com/discordjs/discord.js/docs/stable.json",
-  main: "https://raw.githubusercontent.com/discordjs/discord.js/docs/main.json",
+  "discord.js/stable":
+    "https://raw.githubusercontent.com/discordjs/docs/main/discord.js/stable.json",
+  "discord.js/main":
+    "https://raw.githubusercontent.com/discordjs/docs/main/discord.js/main.json",
   commando:
     "https://raw.githubusercontent.com/discordjs/commando/docs/master.json",
   rpc: "https://raw.githubusercontent.com/discordjs/rpc/docs/master.json",
   akairo:
     "https://raw.githubusercontent.com/discord-akairo/discord-akairo/docs/master.json",
-  collection:
-    "https://raw.githubusercontent.com/discordjs/collection/docs/master.json",
+  "collection/main":
+    "https://raw.githubusercontent.com/discordjs/docs/main/collection/main.json",
+  "collection/stable":
+    "https://raw.githubusercontent.com/discordjs/docs/main/collection/stable.json",
 }
 
 export const cache = new Map<typing.SourceName, typing.Raw>()
@@ -99,9 +105,9 @@ export async function fetchRaw(
     return cache.get(sourceName) as typing.Raw
 
   try {
-    const data: typing.Raw = await fetch(sources[sourceName]).then((res) =>
-      res.json()
-    )
+    const data: typing.Raw = await axios
+      .get(sources[sourceName])
+      .then((res) => res.data)
     cache.set(sourceName, data)
     return data
   } catch (err) {
