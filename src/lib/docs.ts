@@ -7,20 +7,34 @@ import * as util from "./util"
 // todo: fetch github doc version files with https://stackoverflow.com/questions/25022016/get-all-file-names-from-a-github-repo-through-the-github-api
 // https://api.github.com/repos/[USER]/[REPO]/git/trees/[BRANCH]?recursive=1
 
+// from (https://raw.githubusercontent.com/discordjs/docs/main/[NAME]/[VERSION].json) !
+
 export const sources = {
+  "v11": "https://raw.githubusercontent.com/discordjs/docs/main/discord.js/v11.json",
+  "v12": "https://raw.githubusercontent.com/discordjs/docs/main/discord.js/v12.json",
+  "v13": "https://raw.githubusercontent.com/discordjs/docs/main/discord.js/v13.json",
   "discord.js/stable":
     "https://raw.githubusercontent.com/discordjs/docs/main/discord.js/stable.json",
   "discord.js/main":
     "https://raw.githubusercontent.com/discordjs/docs/main/discord.js/main.json",
   commando:
-    "https://raw.githubusercontent.com/discordjs/commando/docs/master.json",
-  rpc: "https://raw.githubusercontent.com/discordjs/rpc/docs/master.json",
+    "https://raw.githubusercontent.com/discordjs/docs/main/legacy/commando/master.json",
+  rpc: "https://raw.githubusercontent.com/discordjs/docs/main/legacy/rpc/master.json",
+  rest: "https://raw.githubusercontent.com/discordjs/docs/main/rest/main.api.json",
+  util: "https://raw.githubusercontent.com/discordjs/docs/main/util/main.api.json",
+  voice: "https://raw.githubusercontent.com/discordjs/docs/main/voice/main.api.json",
+  ws: "https://raw.githubusercontent.com/discordjs/docs/main/ws/main.api.json",
   akairo:
     "https://raw.githubusercontent.com/discord-akairo/discord-akairo/docs/master.json",
   "collection/main":
     "https://raw.githubusercontent.com/discordjs/docs/main/collection/main.json",
   "collection/stable":
     "https://raw.githubusercontent.com/discordjs/docs/main/collection/stable.json",
+  "builders/stable":
+    "https://raw.githubusercontent.com/discordjs/docs/main/builders/stable.json",
+  "builders/main":
+    "https://raw.githubusercontent.com/discordjs/docs/main/builders/main.json",
+  "brokers": "https://raw.githubusercontent.com/discordjs/docs/main/brokers/main.api.json",
 }
 
 export const cache = new Map<typing.SourceName, typing.Raw>()

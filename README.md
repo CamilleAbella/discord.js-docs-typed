@@ -24,7 +24,7 @@ const docs = require("ghom-djs-docs")
 
 Fetches and parses the docs for the given project.\
 `sourceName` can be any of the predefined values (`stable`, `master`, `commando`, `rpc`, `akairo`, and `collection`)
-or an URL which will return the raw generated docs (e.g https://raw.githubusercontent.com/discordjs/discord.js/docs/master.json ).\
+or an URL which will return the raw generated docs (e.g https://raw.githubusercontent.com/discordjs/docs/main/discord.js/main.json).\
 Once a documentation is fetched it will be cached. Use `options.force` to avoid this behavior.
 
 ### Params:
